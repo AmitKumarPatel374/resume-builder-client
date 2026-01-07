@@ -28,6 +28,7 @@ import ExperienceForm from "../components/ExperienceForm"
 import EducationForm from "../components/EducationForm"
 import ProjectForm from "../components/ProjectForm"
 import SkillsForm from "../components/SkillsForm"
+import apiInstance from "../configs/api"
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams()
@@ -47,11 +48,15 @@ const ResumeBuilder = () => {
   })
 
   const loadExistingResume = async () => {
-    const resume = dummyResumeData.find((resume) => resume._id === resumeId)
+    try {
+      const {data} = await apiInstance.get(`/resume/get/${resumeId}`)
 
-    if (resume) {
-      setResumeData(resume)
-      document.title == resume.title
+      if (data.resume) {
+        setResumeData(data.resume);
+        document.title = data.resume.title;
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   }
 

@@ -8,10 +8,17 @@ import {
   PencilIcon,
   XIcon,
   UploadCloud,
+  LoaderCircleIcon,
 } from "lucide-react"
 import { dummyResumeData } from "../assets/assets"
+import { useSelector } from "react-redux"
+import apiInstance from "../configs/api"
+import toast from "react-hot-toast"
+import pdfToText from "react-pdftotext"
 
 const Dashboard = () => {
+  const { user } = useSelector((state) => state.auth)
+
   const colors = ["#9333ea", "#d97706", "#dc2626", "#0284c7", "#16a34a"]
   const [allResumes, setAllResumes] = useState([])
   const [showCreateResume, setShowCreateResume] = useState(false)
@@ -19,31 +26,87 @@ const Dashboard = () => {
   const [title, setTitle] = useState("")
   const [resume, setResume] = useState(null)
   const [editResumeId, setEditResumeId] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
   const loadAllResumes = async () => {
-    setAllResumes(dummyResumeData)
+    try {
+      const { data } = await apiInstance.get("/resume/data")
+
+      setAllResumes(data.resumes)
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message)
+    }
   }
 
   const createResume = async (e) => {
-    e.preventDefault()
-    setShowCreateResume(false)
-    navigate(`/app/builder/res111`)
+    try {
+      e.preventDefault()
+      const { data } = await apiInstance.post("/resume/create", { title })
+      console.log(data)
+
+      setAllResumes(...allResumes, data.resume)
+      setTitle("")
+      setShowCreateResume(false)
+      navigate(`/app/builder/${data.resume._id}`)
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message)
+    }
   }
 
   const uploadResume = async (e) => {
     e.preventDefault()
-    setShowUploadResume(false)
-    navigate(`/app/builder/res111`)
+
+    if (!resume) {
+      toast.error("Please upload a PDF file")
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const resumeText = await pdfToText(resume)
+
+      if (!resumeText) {
+        toast.error("Could not extract text from PDF")
+        return
+      }
+
+      const { data } = await apiInstance.post("/ai/upload-resume", {
+        title,
+        resumeText,
+      })
+
+      navigate(`/app/builder/${data.resumeId}`)
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const editTitle=(e)=>{
-    e.preventDefault();
+  const editTitle = async(e) => {
+    try {
+      e.preventDefault();
+      const {data} = await apiInstance.put('/resume/update',{resumeId:editResumeId,resumeData:{title} })
+      setAllResumes(allResumes.map(resume=> resume._id === editResumeId ? {...resume,title}:resume))
+      setTitle('')
+      setEditResumeId('')
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message)
+    }
   }
-  const deleteResume=(resumeId)=>{
-    const confirm = window.confirm("are you sure want to delete this resume?");
-    if(confirm){
-      setAllResumes(prev=>prev.filter(resume=> resume._id !== resumeId))
+  const deleteResume = async(resumeId) => {
+    try {
+      const confirm = window.confirm("are you sure want to delete this resume?")
+    if (confirm) {
+      const {data} = await apiInstance.delete(`/resume/delete/${resumeId}`)
+      setAllResumes(allResumes.filter(resume=> resume._id !==resumeId));
+      toast.success(data.message);
+    }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message)
     }
   }
 
@@ -68,7 +131,10 @@ const Dashboard = () => {
               Create Resume
             </p>
           </button>
-          <button onClick={()=>setShowUploadResume(true)} className="w-full bg-white sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 text-slate-600 border border-dashed border-slate-300 group hover:border-purple-500 hover:shadow-lg transition-all duration-300 cursor-pointer">
+          <button
+            onClick={() => setShowUploadResume(true)}
+            className="w-full bg-white sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 text-slate-600 border border-dashed border-slate-300 group hover:border-purple-500 hover:shadow-lg transition-all duration-300 cursor-pointer"
+          >
             <UploadCloudIcon className="size-11 transition-all duration-300 p-2.5 bg-gradient-to-br from-purple-300 to-purple-500 text-white rounded-full" />
             <p className="text-sm group-hover:text-purple-600 transition-all duration-300">
               Upload Existing
@@ -83,7 +149,7 @@ const Dashboard = () => {
             const baseColor = colors[index % colors.length]
             return (
               <button
-              onClick={()=>navigate(`/app/builder/${resume._id}`)}
+                onClick={() => navigate(`/app/builder/${resume._id}`)}
                 key={index}
                 className="relative w-full sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 border group hover:shadow-lg transition-all duration-300 cursor-pointer"
                 style={{
@@ -110,9 +176,21 @@ const Dashboard = () => {
                   Updated on {new Date(resume.updatedAt).toLocaleDateString()}
                 </p>
 
-                <div onClick={e=>e.stopPropagation()} className="absolute top-1 right-1 group-hover:flex items-center hidden">
-                  <TrashIcon onClick={()=>deleteResume(resume._id)} className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors" />
-                  <PencilIcon onClick={()=>{setEditResumeId(resume._id); setTitle(resume.title)}} className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors" />
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-1 right-1 group-hover:flex items-center hidden"
+                >
+                  <TrashIcon
+                    onClick={() => deleteResume(resume._id)}
+                    className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors"
+                  />
+                  <PencilIcon
+                    onClick={() => {
+                      setEditResumeId(resume._id)
+                      setTitle(resume.title)
+                    }}
+                    className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors"
+                  />
                 </div>
               </button>
             )
@@ -195,10 +273,17 @@ hover:text-green-700 cursor-pointer transition-colors"
                     )}
                   </div>
                 </label>
-                <input type="file" id="resume-input" accept=".pdf" hidden onChange={(e)=>setResume(e.target.files[0])} />
+                <input
+                  type="file"
+                  id="resume-input"
+                  accept=".pdf"
+                  hidden
+                  onChange={(e) => setResume(e.target.files[0])}
+                />
               </div>
-              <button className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
-                Upload Resume
+              <button disabled={isLoading} className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
+                {isLoading && <LoaderCircleIcon className="animate-spin size-4 text-white" />}
+                {isLoading ?'Uploading':'Upload Resume'}
               </button>
               <XIcon
                 className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
@@ -211,10 +296,10 @@ hover:text-green-700 cursor-pointer transition-colors"
           </form>
         )}
 
-         {editResumeId && (
+        {editResumeId && (
           <form
             onSubmit={editTitle}
-            onClick={() => setEditResumeId('')}
+            onClick={() => setEditResumeId("")}
             action=""
             className="fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-10 flex items-center justify-center"
           >
@@ -232,12 +317,12 @@ hover:text-green-700 cursor-pointer transition-colors"
                 required
               />
               <button className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
-               Update
+                Update
               </button>
               <XIcon
                 className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
                 onClick={() => {
-                  setEditResumeId('')
+                  setEditResumeId("")
                   setTitle("")
                 }}
               />
