@@ -165,7 +165,7 @@ const CreativeTemplate = ({ data, accentColor }) => {
           )}
 
           {/* Projects */}
-          {data.project?.length > 0 && (
+          {data.projects?.length > 0 && (
             <section>
               <h2
                 className="flex items-center gap-2 text-lg font-semibold mb-4"
@@ -174,7 +174,7 @@ const CreativeTemplate = ({ data, accentColor }) => {
                 <FolderGit2 size={16} /> Projects
               </h2>
               <div className="space-y-4">
-                {data.project.map((proj, i) => (
+                {data.projects.map((proj, i) => (
                   <div key={i}>
                     <h3 className="font-medium">{proj.name}</h3>
                     {proj.description && (

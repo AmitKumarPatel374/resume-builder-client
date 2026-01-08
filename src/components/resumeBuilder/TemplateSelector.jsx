@@ -25,6 +25,54 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
       name: "Minimal",
       preview: "Ultra-clean design that puts your content front and center",
     },
+    {
+      id: "creative",
+      name: "Creative",
+      preview: "Two-column creative layout with highlighted sections",
+    },
+    {
+      id: "creative-timeline",
+      name: "Creative Timeline",
+      preview: "Timeline-based creative resume layout",
+    },
+    {
+      id: "creative-sidebar",
+      name: "Creative Sidebar",
+      preview: "Sidebar-focused modern resume",
+    },
+    {
+      id: "professional",
+      name: "Professional",
+      preview: "Clean ATS-friendly resume for freshers and MERN developers",
+    },
+    { id: "split-modern", name: "Split Modern", preview: "Modern split layout" },
+    { id: "ats-one-page", name: "ATS One Page", preview: "Strict ATS friendly resume" },
+    { id: "dark-creative", name: "Dark Creative", preview: "Dark themed modern resume" },
+    {
+      id: "hr-professional",
+      name: "HR Professional",
+      preview: "Most preferred clean resume by HRs",
+    },
+    {
+      id: "hr-minimal",
+      name: "HR Minimal Corporate",
+      preview: "ATS-safe corporate resume",
+    },
+    {
+      id: "hr-classic-2col",
+      name: "HR Classic Two Column",
+      preview: "Two-column clean professional HR resume",
+    },
+    {
+      id: "hr-strict-ats",
+      name: "HR Strict ATS",
+      preview: "Plain text ATS-safe resume (best for portals)",
+    },
+    {
+      id: "hr-experience",
+      name: "HR Experience Focused",
+      preview: "Projects & experience focused resume",
+    },
   ]
   return (
     <div className="relative">
@@ -39,8 +87,9 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
 
       {isOpen && (
         <div
-          className="absolute top-full w-xs p-3 mt-2 space-y-3 z-10 bg-white
-rounded-md border border-gray-200 shadow-sm"
+          className="absolute top-full mt-2 w-72 z-20
+  bg-white border border-gray-200 rounded-md shadow-lg
+  max-h-80 overflow-y-auto"
         >
           {templates.map((template) => {
             return (

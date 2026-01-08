@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { dummyResumeData } from "../assets/assets"
-import ResumePreview from "../components/ResumePreview"
+import ResumePreview from "../components/resumeBuilder/ResumePreview"
 import { ArrowLeftIcon } from "lucide-react"
 import Loader from "../components/Loader"
 import apiInstance from "../configs/api"
@@ -15,11 +15,11 @@ const Preview = () => {
 
   const loadResume = async () => {
     try {
-      const {data} = await apiInstance.get(`/resume/get/public/${resumeIdesum}`)
+      const { data } = await apiInstance.get(`/resume/get/public/${resumeId}`)
       setResumeData(data.resume)
     } catch (error) {
       toast.error(error.message)
-    }finally{
+    } finally {
       setIsLoading(false)
     }
   }
@@ -40,24 +40,23 @@ const Preview = () => {
     </div>
   ) : (
     <div>
-  {isLoading ? <Loader /> : (
-    <div className='flex flex-col items-center justify-center h-screen'>
-      <p className='text-center text-6xl text-slate-400 font-medium'>
-        Resume not found
-      </p>
-      <a
-        href="/"
-        className='mt-6 bg-green-500 hover:bg-green-600 text-white
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className="flex flex-col items-center justify-center h-screen">
+          <p className="text-center text-6xl text-slate-400 font-medium">Resume not found</p>
+          <a
+            href="/"
+            className="mt-6 bg-green-500 hover:bg-green-600 text-white
         rounded-full px-6 h-9 ml-1 ring-offset-1 ring-1 ring-green-400
-        flex items-center transition-colors'
-      >
-        <ArrowLeftIcon className='mr-2 size-4' />
-        go to home page
-      </a>
+        flex items-center transition-colors"
+          >
+            <ArrowLeftIcon className="mr-2 size-4" />
+            go to home page
+          </a>
+        </div>
+      )}
     </div>
-  )}
-</div>
-
   )
 }
 

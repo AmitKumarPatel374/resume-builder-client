@@ -1,7 +1,7 @@
 import { Loader2, Sparkle, Sparkles } from "lucide-react"
 import React from "react"
 import { useState } from "react"
-import apiInstance from "../configs/api"
+import apiInstance from "../../configs/api"
 import toast from "react-hot-toast"
 
 const ProfessionalSummarForm = ({ data, onChange, setResumeData }) => {

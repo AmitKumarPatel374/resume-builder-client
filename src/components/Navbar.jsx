@@ -7,7 +7,7 @@ import { logout } from "../app/features/authSlice"
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth)
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const logoutUser = async () => {
@@ -25,11 +25,10 @@ const Navbar = () => {
     <div className="shadow bg-white print:hidden">
       <nav className="flex items-center justify-between max-w-7xl mx-auto px-4 py-3.5 text-slate-800 transition-all ">
         <Link to="/">
-          <img
-            src="/logo.svg"
-            alt="logo"
-            className="h-11 w-auto"
-          />
+          <h2 className="text-xl font-semibold tracking-tight">
+            <span className="text-slate-800">resu</span>
+            <span className="text-indigo-600 font-bold">Instant</span>
+          </h2>
         </Link>
         <div className="flex items-center gap-4 text-sm">
           <p className="max-sm:hidden">Hi, {user?.name}</p>

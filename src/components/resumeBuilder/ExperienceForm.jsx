@@ -1,7 +1,7 @@
 import { Briefcase, Loader2, Plus, Sparkle, Sparkles, Trash2 } from "lucide-react"
 import React from "react"
 import { useState } from "react"
-import apiInstance from "../configs/api"
+import apiInstance from "../../configs/api"
 import toast from "react-hot-toast"
 
 const ExperienceForm = ({ data, onChange }) => {
