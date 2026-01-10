@@ -107,9 +107,9 @@ const Dashboard = () => {
       <aside className="w-64 bg-white border-r px-4 py-6 flex flex-col">
         <nav className="space-y-1 flex-1">
           {[
+            { id: "resumes", label: "Your Resumes" },
             { id: "create", label: "Create Resume" },
             { id: "upload", label: "Upload Resume" },
-            { id: "resumes", label: "Your Resumes" },
             { id: "contact", label: "Contact" },
             { id: "feedback", label: "feedback" },
           ].map((item) => (
