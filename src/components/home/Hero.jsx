@@ -1,9 +1,30 @@
 import React, { useState } from "react"
 import { useSelector } from "react-redux"
+import apiInstance from "../../configs/api"
+import { useEffect } from "react"
 
 const Hero = () => {
   const user = useSelector((state) => state.auth.user)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [userCount, setUserCount] = useState(0)
+
+  const countUser = async () => {
+    try {
+      const { data } = await apiInstance.get("/auth/user/count")
+      setUserCount(data.userCount)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const formatUserCount = (count) => {
+    if (!count || count < 10) return "10+"
+    return `${Math.floor(count / 10) * 10}+`
+  }
+
+  useEffect(() => {
+    countUser()
+  }, [])
 
   return (
     <>
@@ -20,13 +41,22 @@ const Hero = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8 text-slate-700">
-            <a href="#features" className="hover:text-green-600 transition">
+            <a
+              href="#features"
+              className="hover:text-green-600 transition"
+            >
               Features
             </a>
-            <a href="#testimonials" className="hover:text-green-600 transition">
+            <a
+              href="#testimonials"
+              className="hover:text-green-600 transition"
+            >
               Testimonials
             </a>
-            <a href="#contact" className="hover:text-green-600 transition">
+            <a
+              href="#contact"
+              className="hover:text-green-600 transition"
+            >
               Contact
             </a>
           </div>
@@ -65,7 +95,13 @@ const Hero = () => {
             onClick={() => setMenuOpen(true)}
             className="md:hidden"
           >
-            <svg width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="26"
+              height="26"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M4 6h18M4 13h18M4 20h18" />
             </svg>
           </button>
@@ -121,9 +157,24 @@ const Hero = () => {
           </h1>
 
           <p className="mt-5 text-slate-600 text-base max-w-xl mx-auto">
-            Create, edit, and manage resumes easily.
-            Use AI only where it actually helps.
+            Create, edit, and manage resumes easily. Use AI only where it actually helps.
           </p>
+
+          <div
+            className="mt-5 inline-flex items-center gap-2 px-4 py-1.5
+  bg-green-50 border border-green-200
+  rounded-full text-sm"
+          >
+            {/* Stars */}
+            <div className="flex items-center gap-0.5 text-yellow-400 text-xs">★★★★★</div>
+
+            {/* Text */}
+            <span className="text-slate-600">
+              Trusted by{" "}
+              <span className="font-semibold text-green-700">{formatUserCount(userCount)}</span>{" "}
+              users
+            </span>
+          </div>
 
           <div className="mt-8 flex justify-center gap-4">
             <a
