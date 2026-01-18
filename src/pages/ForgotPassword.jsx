@@ -61,9 +61,7 @@ const ForgotPassword = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl px-8 py-10 shadow-sm"
       >
-        <h1 className="text-2xl font-semibold text-gray-900 text-center">
-          Forgot Password
-        </h1>
+        <h1 className="text-2xl font-semibold text-gray-900 text-center">Forgot Password</h1>
 
         <p className="text-sm text-gray-500 text-center mt-2">
           Enter your registered email to receive a reset link
@@ -94,16 +92,10 @@ const ForgotPassword = () => {
             <span
               onClick={handleResend}
               className={`text-green-500 cursor-pointer ${
-                timer > 0
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:underline"
+                timer > 0 ? "opacity-50 cursor-not-allowed" : "hover:underline"
               }`}
             >
-              {resending
-                ? "Resending..."
-                : timer > 0
-                ? `Resend in ${timer}s`
-                : "Resend link"}
+              {resending ? "Resending..." : timer > 0 ? `Resend in ${timer}s` : "Resend link"}
             </span>
           </p>
         )}
